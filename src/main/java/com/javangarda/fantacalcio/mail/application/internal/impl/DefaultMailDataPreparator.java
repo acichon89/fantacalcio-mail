@@ -1,37 +1,53 @@
 package com.javangarda.fantacalcio.mail.application.internal.impl;
 
 
-import com.javangarda.fantacalcio.mail.application.data.MailData;
-import com.javangarda.fantacalcio.mail.application.data.commands.ConfirmEmailCommand;
+import com.javangarda.fantacalcio.mail.application.gateway.commands.SendMailCommand;
+import com.javangarda.fantacalcio.mail.application.gateway.commands.ChangeEmailCommand;
+import com.javangarda.fantacalcio.mail.application.gateway.commands.ConfirmEmailCommand;
+import com.javangarda.fantacalcio.mail.application.internal.LocaleProvider;
 import com.javangarda.fantacalcio.mail.application.internal.MailDataPreparator;
 import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.context.MessageSource;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 @AllArgsConstructor
 public class DefaultMailDataPreparator implements MailDataPreparator {
 
     private final MessageSource messageSource;
     private final TemplateEngine templateEngine;
+    private final LocaleProvider localeProvider;
     private final String applicationUrl;
     private final String supportContact;
-    private static final Locale DEFAULT_LOCALE = new Locale("en","GB");
 
 
     @Override
-    public MailData prepare(ConfirmEmailCommand command) {
-        Locale locale = command.getLocale().orElse(DEFAULT_LOCALE);
+    public SendMailCommand prepare(ConfirmEmailCommand command) {
+        Locale locale = command.getEmailLocale().filter(localeProvider::support).orElse(localeProvider.defaultLocale());
         String title = messageSource.getMessage("activationMail.title", null, locale);
-        Context context = new Context();
+        Context context = createContext(locale);
         context.setVariable("email", command.getEmail());
         context.setVariable("confirmationUrl", applicationUrl + "/confirmMail?token="+command.getConfirmationToken());
         context.setVariable("supportContact", supportContact);
-        return MailData.of(command.getEmail(), title, templateEngine.process("confirmation_mail", context));
+        return SendMailCommand.of(command.getEmail(), title, templateEngine.process("confirmation_mail", context));
+    }
+
+    @Override
+    public SendMailCommand prepare(ChangeEmailCommand command) {
+        Locale locale = command.getEmailLocale().filter(localeProvider::support).orElse(localeProvider.defaultLocale());
+        String title = messageSource.getMessage("changeEmailMail.title", null, locale);
+        Context context = createContext(locale);
+        context.setVariable("userName", command.getUserName());
+        context.setVariable("newEmail", command.getNewEmail());
+        context.setVariable("changeMailUrl", applicationUrl +"/changeMail?token"+command.getConfirmationToken());
+        return SendMailCommand.of(command.getNewEmail(), title, templateEngine.process("change_mail", context));
+    }
+
+    private Context createContext(Locale locale){
+        Context context = new Context();
+        context.setLocale(locale);
+        return context;
     }
 }

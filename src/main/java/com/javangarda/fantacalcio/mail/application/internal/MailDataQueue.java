@@ -1,8 +1,8 @@
 package com.javangarda.fantacalcio.mail.application.internal;
 
 
-import com.javangarda.fantacalcio.mail.application.data.MailData;
+import com.javangarda.fantacalcio.mail.application.gateway.commands.SendMailCommand;
 
 public interface MailDataQueue {
-    void add(MailData mailData);
+    void add(SendMailCommand sendMailCommand);
 }

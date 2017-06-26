@@ -1,36 +1,51 @@
 package com.javangarda.fantacalcio.mail;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.javangarda.fantacalcio.mail.application.data.MailData;
-import com.javangarda.fantacalcio.mail.application.gateway.MailGateway;
-import com.javangarda.fantacalcio.mail.application.internal.MailDataQueue;
+import com.javangarda.fantacalcio.mail.application.gateway.CommandBus;
+import com.javangarda.fantacalcio.mail.application.gateway.commands.SendMailCommand;
+import com.javangarda.fantacalcio.mail.application.gateway.impl.SimpleCommandBus;
+import com.javangarda.fantacalcio.mail.application.internal.*;
 import com.javangarda.fantacalcio.mail.application.internal.impl.DefaultMailDataPreparator;
-import com.javangarda.fantacalcio.mail.application.gateway.impl.QueueDrivenMailGateway;
-import com.javangarda.fantacalcio.mail.application.internal.EmailSender;
-import com.javangarda.fantacalcio.mail.application.internal.MailDataPreparator;
+import com.javangarda.fantacalcio.mail.application.internal.impl.SimpleLocaleProvider;
+import com.javangarda.fantacalcio.mail.application.internal.saga.CommandHandler;
+import com.javangarda.fantacalcio.mail.application.internal.saga.MailEventPublisher;
+import com.javangarda.fantacalcio.mail.application.internal.saga.impl.EventDrivenCommandHandler;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.DefaultMailDataQueue;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.mail.DefaultEmailSender;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.Events;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.MessageHandler;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.integration.annotation.IntegrationComponentScan;
+import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.channel.QueueChannel;
+import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.endpoint.PollingConsumer;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import java.util.concurrent.Executor;
+
 @SpringBootApplication
-@EnableDiscoveryClient
+@EnableEurekaClient
 @EnableBinding(Events.class)
-public class FantacalcioMailApplication {
+@EnableIntegration
+@IntegrationComponentScan(basePackages={"com.javangarda.fantacalcio.mail.application.internal.saga"})
+public class FantacalcioMailApplication implements AsyncConfigurer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FantacalcioMailApplication.class, args);
@@ -42,11 +57,17 @@ public class FantacalcioMailApplication {
 	}
 
 	@Bean
+	public LocaleProvider localeProvider(){
+		return new SimpleLocaleProvider();
+	}
+
+	@Bean
 	@RefreshScope
 	public MailDataPreparator mailDataPreparator(final MessageSource messageSource, final TemplateEngine templateEngine,
+												 final LocaleProvider localeProvider,
 												 @Value("${fantacalcio.webapp.mainurl}") String applicationUrl,
 												 @Value("${fantacalcio.mail.addresses.contact}") String supportContact){
-		return new DefaultMailDataPreparator(messageSource, templateEngine, applicationUrl, supportContact);
+		return new DefaultMailDataPreparator(messageSource, templateEngine, localeProvider, applicationUrl, supportContact);
 	}
 
 	@Bean
@@ -55,20 +76,46 @@ public class FantacalcioMailApplication {
 	}
 
 	@Bean
-	public MailGateway mailGateway(final MailDataPreparator mailDataPreparator, final MailDataQueue mailDataQueue){
-		return new QueueDrivenMailGateway(mailDataPreparator, mailDataQueue);
+	public MessageChannel mailSentChannel(){
+		return new PublishSubscribeChannel(getAsyncExecutor());
+	}
+
+	@Override
+	public Executor getAsyncExecutor() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(5);
+		executor.setMaxPoolSize(5);
+		executor.setQueueCapacity(5);
+		executor.initialize();
+		return executor;
+	}
+
+	@Override
+	public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+		return new SimpleAsyncUncaughtExceptionHandler();
+	}
+
+	@Bean
+	public CommandBus commandBus(final MailDataPreparator mailDataPreparator, final MailDataQueue mailDataQueue){
+		return new SimpleCommandBus(mailDataPreparator, mailDataQueue);
 	}
 
 	@Bean
 	public ObjectMapper objectMapper(){
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new Jdk8Module());
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		return objectMapper;
 	}
 
 	@Bean
-	public MessageHandler messageHandler(MailGateway mailGateway) {
-		return new MessageHandler(mailGateway);
+	public MessageHandler messageHandler(CommandBus commandBus) {
+		return new MessageHandler(commandBus);
+	}
+
+	@Bean
+	public CommandHandler commandHandler(EmailSender emailSender, MailEventPublisher mailEventPublisher) {
+		return new EventDrivenCommandHandler(emailSender, mailEventPublisher);
 	}
 
 	@Bean
@@ -77,10 +124,10 @@ public class FantacalcioMailApplication {
 	}
 
 	@Bean
-	public PollingConsumer mailDataPollingConsumer(QueueChannel mailDataQueueChannel, EmailSender emailSender){
+	public PollingConsumer mailDataPollingConsumer(QueueChannel mailDataQueueChannel, CommandHandler commandHandler){
 		PollingConsumer pollingConsumer = new PollingConsumer(mailDataQueueChannel, message -> {
-			MailData mailData = (MailData) message.getPayload();
-			emailSender.send(mailData);
+			SendMailCommand sendMailCommand = (SendMailCommand) message.getPayload();
+			commandHandler.handle(sendMailCommand);
 		});
 		pollingConsumer.setMaxMessagesPerPoll(1);
 		pollingConsumer.setReceiveTimeout(10);

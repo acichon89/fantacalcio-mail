@@ -13,3 +13,8 @@ spring:
     port: 5672
     username: guest
     password: guest
+  datasource:
+    url: jdbc:mysql://localhost/fantacalcio_mail
+    username: fantacalcio_db_user
+    password: fantacalciodbpass1
+    driverClassName: com.mysql.jdbc.Driver

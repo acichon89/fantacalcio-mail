@@ -8,4 +8,9 @@ public interface Events {
 
     @Input(SEND_CONFIRMATION_MAIL_INPUT)
     SubscribableChannel sendConfirmationMailChannel();
+
+    String SEND_CHANGE_EMAIL_INPUT = "userAttemptedToChangeEmailChannel";
+
+    @Input(SEND_CHANGE_EMAIL_INPUT)
+    SubscribableChannel sendChangeEmailInput();
 }

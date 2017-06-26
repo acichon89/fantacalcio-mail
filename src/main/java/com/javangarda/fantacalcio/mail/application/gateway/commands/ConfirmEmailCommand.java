@@ -1,17 +1,15 @@
-package com.javangarda.fantacalcio.mail.application.data.commands;
+package com.javangarda.fantacalcio.mail.application.gateway.commands;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Value;
 
 import java.util.Locale;
 import java.util.Optional;
 
-@AllArgsConstructor
 @Value
 public class ConfirmEmailCommand {
 
     private String email;
     private String confirmationToken;
-    private Optional<Locale> locale;
+    private Optional<Locale> emailLocale;
 }

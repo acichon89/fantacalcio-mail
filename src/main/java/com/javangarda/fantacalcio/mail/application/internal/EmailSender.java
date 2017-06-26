@@ -1,9 +1,9 @@
 package com.javangarda.fantacalcio.mail.application.internal;
 
 
-import com.javangarda.fantacalcio.mail.application.data.MailData;
+import com.javangarda.fantacalcio.mail.application.gateway.commands.SendMailCommand;
 
 public interface EmailSender {
 
-    void send(MailData mailData);
+    void send(SendMailCommand sendMailCommand);
 }

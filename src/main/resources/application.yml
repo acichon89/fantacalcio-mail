@@ -10,5 +10,12 @@ spring:
         sendConfirmationMailChannel:
           durableSubscription: true
           group: default
-          destination: send-confirmation-mail-queue
-          content-type: application/x-java-object;type=com.javangarda.fantacalcio.mail.application.data.commands.ConfirmEmailCommand
+          destination: user-registered-queue
+          content-type: application/x-java-object;type=com.javangarda.fantacalcio.mail.application.gateway.commands.ConfirmEmailCommand
+        userAttemptedToChangeEmailChannel:
+          durableSubscription: true
+          group: default
+          destination: user-attempted-to-change-email-queue
+          content-type: com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.UserAttemptedToChangeEmailEvent
+  application:
+    name: fantacalcio-mail

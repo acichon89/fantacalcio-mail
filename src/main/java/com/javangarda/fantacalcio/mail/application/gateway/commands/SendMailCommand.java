@@ -1,13 +1,11 @@
-package com.javangarda.fantacalcio.mail.application.data;
+package com.javangarda.fantacalcio.mail.application.gateway.commands;
 
 import lombok.ToString;
 import lombok.Value;
 
-import java.util.Map;
-
 @Value(staticConstructor = "of")
 @ToString
-public class MailData {
+public class SendMailCommand {
     private String recipient;
     private String title;
     private String content;
