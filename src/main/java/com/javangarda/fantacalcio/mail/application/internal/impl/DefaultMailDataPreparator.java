@@ -7,13 +7,17 @@ import com.javangarda.fantacalcio.mail.application.gateway.commands.ConfirmEmail
 import com.javangarda.fantacalcio.mail.application.internal.LocaleProvider;
 import com.javangarda.fantacalcio.mail.application.internal.MailDataPreparator;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Locale;
 
 @AllArgsConstructor
+@Slf4j
 public class DefaultMailDataPreparator implements MailDataPreparator {
 
     private final MessageSource messageSource;
@@ -29,7 +33,7 @@ public class DefaultMailDataPreparator implements MailDataPreparator {
         String title = messageSource.getMessage("activationMail.title", null, locale);
         Context context = createContext(locale);
         context.setVariable("email", command.getEmail());
-        context.setVariable("confirmationUrl", applicationUrl + "/confirmMail?token="+command.getConfirmationToken());
+        context.setVariable("confirmationUrl", applicationUrl + "/confirmMail?token="+command.getConfirmationToken()+"&email="+ encode(command.getEmail()));
         context.setVariable("supportContact", supportContact);
         return SendMailCommand.of(command.getEmail(), title, templateEngine.process("confirmation_mail", context));
     }
@@ -49,5 +53,14 @@ public class DefaultMailDataPreparator implements MailDataPreparator {
         Context context = new Context();
         context.setLocale(locale);
         return context;
+    }
+
+    private String encode(String value){
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+           log.error("Error while encoding value '"+value+"'", e);
+        }
+        return "";
     }
 }

@@ -9,13 +9,19 @@ import com.javangarda.fantacalcio.mail.application.gateway.impl.SimpleCommandBus
 import com.javangarda.fantacalcio.mail.application.internal.*;
 import com.javangarda.fantacalcio.mail.application.internal.impl.DefaultMailDataPreparator;
 import com.javangarda.fantacalcio.mail.application.internal.impl.SimpleLocaleProvider;
+import com.javangarda.fantacalcio.mail.application.internal.impl.SimpleSentEmailFactory;
+import com.javangarda.fantacalcio.mail.application.internal.impl.TransactionalSentMailService;
 import com.javangarda.fantacalcio.mail.application.internal.saga.CommandHandler;
+import com.javangarda.fantacalcio.mail.application.internal.saga.EventHandler;
 import com.javangarda.fantacalcio.mail.application.internal.saga.MailEventPublisher;
+import com.javangarda.fantacalcio.mail.application.internal.saga.impl.DefaultEventHandler;
 import com.javangarda.fantacalcio.mail.application.internal.saga.impl.EventDrivenCommandHandler;
+import com.javangarda.fantacalcio.mail.application.internal.storage.SentEmailRepository;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.DefaultMailDataQueue;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.mail.DefaultEmailSender;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.Events;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.MessageHandler;
+import org.apache.naming.factory.SendMailFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +47,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import java.util.concurrent.Executor;
 
 @SpringBootApplication
-@EnableEurekaClient
+//@EnableEurekaClient
 @EnableBinding(Events.class)
 @EnableIntegration
 @IntegrationComponentScan(basePackages={"com.javangarda.fantacalcio.mail.application.internal.saga"})
@@ -101,6 +107,11 @@ public class FantacalcioMailApplication implements AsyncConfigurer {
 	}
 
 	@Bean
+	public SentEmailFactory sentEmailFactory(){
+		return new SimpleSentEmailFactory();
+	}
+
+	@Bean
 	public ObjectMapper objectMapper(){
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new Jdk8Module());
@@ -133,6 +144,16 @@ public class FantacalcioMailApplication implements AsyncConfigurer {
 		pollingConsumer.setReceiveTimeout(10);
 		pollingConsumer.setAutoStartup(true);
 		return pollingConsumer;
+	}
+
+	@Bean
+	public EventHandler eventHandler(SentMailService sentMailService) {
+		return new DefaultEventHandler(sentMailService);
+	}
+
+	@Bean
+	public SentMailService sentMailService(SentEmailFactory sentMailFactory, SentEmailRepository sentEmailRepository) {
+		return new TransactionalSentMailService(sentEmailRepository, sentMailFactory);
 	}
 
 	@Bean
