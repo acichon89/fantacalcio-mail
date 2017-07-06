@@ -6,3 +6,7 @@ spring:
       auth: true
     properties:
       mail.smtp.starttls.enable: true
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://94.177.201.60:8761/eureka/

@@ -4,12 +4,13 @@ package com.javangarda.fantacalcio.mail.application.gateway.impl;
 import com.javangarda.fantacalcio.mail.application.gateway.commands.ChangeEmailCommand;
 import com.javangarda.fantacalcio.mail.application.gateway.commands.ConfirmEmailCommand;
 import com.javangarda.fantacalcio.mail.application.gateway.CommandBus;
+import com.javangarda.fantacalcio.mail.application.gateway.commands.ResetPasswordEmailCommand;
 import com.javangarda.fantacalcio.mail.application.internal.MailDataPreparator;
 import com.javangarda.fantacalcio.mail.application.internal.MailDataQueue;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class SimpleCommandBus implements CommandBus {
+public class QueueDrivenCommandBus implements CommandBus {
     private final MailDataPreparator mailDataPreparator;
     private final MailDataQueue mailDataQueue;
 
@@ -20,6 +21,11 @@ public class SimpleCommandBus implements CommandBus {
 
     @Override
     public void sendConfirmationEmailMail(ChangeEmailCommand command) {
+        mailDataQueue.add(mailDataPreparator.prepare(command));
+    }
+
+    @Override
+    public void sendResetPasswordEmailMail(ResetPasswordEmailCommand command) {
         mailDataQueue.add(mailDataPreparator.prepare(command));
     }
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.javangarda.fantacalcio.mail.application.gateway.CommandBus;
 import com.javangarda.fantacalcio.mail.application.gateway.commands.SendMailCommand;
-import com.javangarda.fantacalcio.mail.application.gateway.impl.SimpleCommandBus;
+import com.javangarda.fantacalcio.mail.application.gateway.impl.QueueDrivenCommandBus;
 import com.javangarda.fantacalcio.mail.application.internal.*;
 import com.javangarda.fantacalcio.mail.application.internal.impl.DefaultMailDataPreparator;
 import com.javangarda.fantacalcio.mail.application.internal.impl.SimpleLocaleProvider;
@@ -21,7 +21,6 @@ import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.Def
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.mail.DefaultEmailSender;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.Events;
 import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.MessageHandler;
-import org.apache.naming.factory.SendMailFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +46,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import java.util.concurrent.Executor;
 
 @SpringBootApplication
-//@EnableEurekaClient
+@EnableEurekaClient
 @EnableBinding(Events.class)
 @EnableIntegration
 @IntegrationComponentScan(basePackages={"com.javangarda.fantacalcio.mail.application.internal.saga"})
@@ -103,7 +102,7 @@ public class FantacalcioMailApplication implements AsyncConfigurer {
 
 	@Bean
 	public CommandBus commandBus(final MailDataPreparator mailDataPreparator, final MailDataQueue mailDataQueue){
-		return new SimpleCommandBus(mailDataPreparator, mailDataQueue);
+		return new QueueDrivenCommandBus(mailDataPreparator, mailDataQueue);
 	}
 
 	@Bean

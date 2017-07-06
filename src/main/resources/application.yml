@@ -17,5 +17,10 @@ spring:
           group: default
           destination: user-attempted-to-change-email-queue
           content-type: com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.UserAttemptedToChangeEmailEvent
+        userForgotPasswordChannel:
+          durableSubscription: true
+            group: default
+            destination: user-forgot-password-queue
+            content-type: application/x-java-object;type=com.javangarda.fantacalcio.mail.application.gateway.commands.ResetPasswordEmailCommand
   application:
     name: fantacalcio-mail

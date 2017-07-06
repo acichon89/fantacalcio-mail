@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.Instant;
 
 @Data
-public class SentEventDTO {
+public class SentMailDTO {
     private String id;
     private String recipientEmail;
     private String htmlContent;

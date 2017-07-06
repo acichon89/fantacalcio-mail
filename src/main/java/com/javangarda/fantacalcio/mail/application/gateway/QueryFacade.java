@@ -1,9 +1,9 @@
 package com.javangarda.fantacalcio.mail.application.gateway;
 
-import com.javangarda.fantacalcio.mail.application.gateway.data.SentEventDTO;
+import com.javangarda.fantacalcio.mail.application.gateway.data.SentMailDTO;
 
 import java.util.Optional;
 
 public interface QueryFacade {
-    Optional<SentEventDTO> getById(String id);
+    Optional<SentMailDTO> getById(String id);
 }

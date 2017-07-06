@@ -1,6 +1,7 @@
 package com.javangarda.fantacalcio.mail.application.internal.impl;
 
 
+import com.javangarda.fantacalcio.mail.application.gateway.commands.ResetPasswordEmailCommand;
 import com.javangarda.fantacalcio.mail.application.gateway.commands.SendMailCommand;
 import com.javangarda.fantacalcio.mail.application.gateway.commands.ChangeEmailCommand;
 import com.javangarda.fantacalcio.mail.application.gateway.commands.ConfirmEmailCommand;
@@ -45,8 +46,18 @@ public class DefaultMailDataPreparator implements MailDataPreparator {
         Context context = createContext(locale);
         context.setVariable("userName", command.getUserName());
         context.setVariable("newEmail", command.getNewEmail());
-        context.setVariable("changeMailUrl", applicationUrl +"/changeMail?token"+command.getConfirmationToken());
+        context.setVariable("changeMailUrl", applicationUrl +"/changeMail?token="+command.getConfirmationToken());
         return SendMailCommand.of(command.getNewEmail(), title, templateEngine.process("change_mail", context));
+    }
+
+    @Override
+    public SendMailCommand prepare(ResetPasswordEmailCommand command) {
+        Locale locale = command.getEmailLocale().filter(localeProvider::support).orElse(localeProvider.defaultLocale());
+        String title = messageSource.getMessage("resetPassword.title", null, locale);
+        Context context = createContext(locale);
+        context.setVariable("userName", command.getFullName());
+        context.setVariable("resetPasswordUrl", applicationUrl + "/resetPassword?token="+command.getResetPasswordToken()+"&email="+encode(command.getEmail()));
+        return SendMailCommand.of(command.getEmail(), title, templateEngine.process("reset_password", context));
     }
 
     private Context createContext(Locale locale){

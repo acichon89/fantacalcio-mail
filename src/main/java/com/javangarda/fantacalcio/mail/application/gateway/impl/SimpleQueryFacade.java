@@ -1,6 +1,6 @@
 package com.javangarda.fantacalcio.mail.application.gateway.impl;
 
-import com.javangarda.fantacalcio.mail.application.gateway.data.SentEventDTO;
+import com.javangarda.fantacalcio.mail.application.gateway.data.SentMailDTO;
 import com.javangarda.fantacalcio.mail.application.gateway.QueryFacade;
 import com.javangarda.fantacalcio.mail.application.internal.storage.SentEmail;
 import com.javangarda.fantacalcio.mail.application.internal.storage.SentEmailRepository;
@@ -14,12 +14,12 @@ public class SimpleQueryFacade implements QueryFacade {
     private final SentEmailRepository sentEmailRepository;
 
     @Override
-    public Optional<SentEventDTO> getById(String id) {
+    public Optional<SentMailDTO> getById(String id) {
         return sentEmailRepository.findById(id).map(this::map);
     }
 
-    private SentEventDTO map(SentEmail entity) {
-        SentEventDTO dto = new SentEventDTO();
+    private SentMailDTO map(SentEmail entity) {
+        SentMailDTO dto = new SentMailDTO();
         dto.setId(entity.getId());
         dto.setHtmlContent(entity.getHtmlContent());
         dto.setRecipientEmail(entity.getEmail());
