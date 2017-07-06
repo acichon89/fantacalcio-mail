@@ -14,8 +14,8 @@ public interface Events {
     @Input(SEND_CHANGE_EMAIL_INPUT)
     SubscribableChannel sendChangeEmailInput();
 
-    String SEND_RESETP_PASSWORD_MAIL_INPUT = "userForgotPasswordChannel";
+    String SEND_RESETPASS_MAIL_INPUT = "userForgotPasswordChannel";
 
-    @Input(SEND_RESETP_PASSWORD_MAIL_INPUT)
+    @Input(SEND_RESETPASS_MAIL_INPUT)
     SubscribableChannel sendResetPasswordChannel();
 }
