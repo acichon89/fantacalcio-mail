@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import javax.mail.internet.MimeMessage;
+import java.util.Random;
 
 @AllArgsConstructor
 @Slf4j
@@ -28,13 +29,19 @@ public class DefaultEmailSender implements EmailSender {
             helper.setFrom(mailHostname);
             helper.setSubject(sendMailCommand.getTitle());
             helper.setText(sendMailCommand.getContent(), true);
-            InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream("/images/header.jpg")));
+            InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream(getHeaderImage())));
             helper.addInline("header.jpg", imageSource, "image/jpg");
         } catch (Exception e) {
             log.error("!!!ERROR WHILE SENDING MAIL: "+ sendMailCommand.toString(), e);
         }
 
         javaMailSender.send(mail);
+    }
+
+    private String getHeaderImage(){
+        Random random = new Random();
+        int x = random.nextInt(4) + 1;
+        return "/images/header"+x+".png";
     }
 
 }
