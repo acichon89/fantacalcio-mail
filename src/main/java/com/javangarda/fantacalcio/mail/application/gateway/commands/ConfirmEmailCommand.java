@@ -6,7 +6,7 @@ import lombok.Value;
 import java.util.Locale;
 import java.util.Optional;
 
-@Value
+@Value(staticConstructor = "of")
 public class ConfirmEmailCommand {
 
     private String email;

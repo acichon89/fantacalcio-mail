@@ -6,7 +6,8 @@ spring:
       auth: true
     properties:
       mail.smtp.starttls.enable: true
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://94.177.201.60:8761/eureka/
+  datasource:
+    url: jdbc:sqlite:fantacalcio_db_mail.db
+    driverClassName: org.sqlite.JDBC
+  jpa:
+    database-platform: that.custom.SQLiteDialect
