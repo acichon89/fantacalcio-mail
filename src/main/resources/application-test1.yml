@@ -7,7 +7,7 @@ spring:
     properties:
       mail.smtp.starttls.enable: true
   datasource:
-    url: jdbc:sqlite:fantacalcio_db_mail.db
+    url: jdbc:sqlite:fantacalcio_mail_db.sqlite
     driverClassName: org.sqlite.JDBC
   jpa:
     database-platform: org.hibernate.dialect.SQLiteDialect
