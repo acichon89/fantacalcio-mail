@@ -12,8 +12,8 @@ import java.time.Instant;
 @AllArgsConstructor
 public class TransactionalSentMailService implements SentMailService {
 
-    private SentEmailRepository sentEmailRepository;
-    private SentEmailFactory sentEmailFactory;
+    private final SentEmailRepository sentEmailRepository;
+    private final SentEmailFactory sentEmailFactory;
 
     @Override
     public void store(String email, String htmlContent, String title, Instant sentInstant) {
