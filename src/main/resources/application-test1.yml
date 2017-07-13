@@ -10,4 +10,4 @@ spring:
     url: jdbc:sqlite:fantacalcio_db_mail.db
     driverClassName: org.sqlite.JDBC
   jpa:
-    database-platform: that.custom.SQLiteDialect
+    database-platform: org.hibernate.dialect.SQLiteDialect
