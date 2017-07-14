@@ -11,3 +11,5 @@ spring:
     driverClassName: org.sqlite.JDBC
   jpa:
     database-platform: org.hibernate.dialect.SQLiteDialect
+    hibernate:
+      naming-strategy: spring.jpa.hibernate.naming-strategy=org.hibernate.cfg.EJB3NamingStrategy
