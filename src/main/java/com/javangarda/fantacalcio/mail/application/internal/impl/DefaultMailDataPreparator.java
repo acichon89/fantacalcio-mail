@@ -30,7 +30,7 @@ public class DefaultMailDataPreparator implements MailDataPreparator {
 
     @Override
     public SendMailCommand prepare(ConfirmEmailCommand command) {
-        Locale locale = command.getEmailLocale().filter(localeProvider::support).orElse(localeProvider.defaultLocale());
+        Locale locale = localeProvider.provideLocale(command.getEmailLocale());
         String title = messageSource.getMessage("activationMail.title", null, locale);
         Context context = createContext(locale);
         context.setVariable("email", command.getEmail());
@@ -41,7 +41,7 @@ public class DefaultMailDataPreparator implements MailDataPreparator {
 
     @Override
     public SendMailCommand prepare(ChangeEmailCommand command) {
-        Locale locale = command.getEmailLocale().filter(localeProvider::support).orElse(localeProvider.defaultLocale());
+        Locale locale = localeProvider.provideLocale(command.getEmailLocale());
         String title = messageSource.getMessage("changeEmailMail.title", null, locale);
         Context context = createContext(locale);
         context.setVariable("userName", command.getUserName());
@@ -52,7 +52,7 @@ public class DefaultMailDataPreparator implements MailDataPreparator {
 
     @Override
     public SendMailCommand prepare(ResetPasswordEmailCommand command) {
-        Locale locale = command.getEmailLocale().filter(localeProvider::support).orElse(localeProvider.defaultLocale());
+        Locale locale = localeProvider.provideLocale(command.getEmailLocale());
         String title = messageSource.getMessage("resetPassword.title", null, locale);
         Context context = createContext(locale);
         context.setVariable("userName", command.getFullName());

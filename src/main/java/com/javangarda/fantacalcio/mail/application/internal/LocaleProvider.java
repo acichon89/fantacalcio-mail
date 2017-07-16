@@ -2,8 +2,8 @@ package com.javangarda.fantacalcio.mail.application.internal;
 
 
 import java.util.Locale;
+import java.util.Optional;
 
 public interface LocaleProvider {
-    Locale defaultLocale();
-    boolean support(Locale locale);
+    Locale provideLocale(Optional<Locale> commandLocale);
 }
