@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 import static org.mockito.Mockito.*;
 
@@ -31,7 +32,7 @@ public class TransactionalSentMailServiceTest {
     public void should_persist_what_factory_creates() {
         //given:
         //when:
-        transactionalSentMailService.store("john@doe.com", "<p>Hello</p>", "hello", Instant.now());
+        transactionalSentMailService.store("john@doe.com", "<p>Hello</p>", "hello", LocalDateTime.now());
         //then:
         ArgumentCaptor<SentEmail> sentEmailAC = ArgumentCaptor.forClass(SentEmail.class);
         verify(sentEmailRepository).save(sentEmailAC.capture());

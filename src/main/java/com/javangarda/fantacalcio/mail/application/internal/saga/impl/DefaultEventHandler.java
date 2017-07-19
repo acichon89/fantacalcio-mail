@@ -15,6 +15,6 @@ public class DefaultEventHandler implements EventHandler{
     @Override
     @ServiceActivator(inputChannel = "mailSentChannel")
     public void handle(MailSentEvent e) {
-        sentMailService.store(e.getRecipientEmail(), e.getHtmlContent(), e.getTitle(), e.getSentInstant());
+        sentMailService.store(e.getRecipientEmail(), e.getHtmlContent(), e.getTitle(), e.getSentDateTime());
     }
 }

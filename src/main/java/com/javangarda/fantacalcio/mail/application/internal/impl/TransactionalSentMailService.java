@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Transactional
 @AllArgsConstructor
@@ -16,7 +17,7 @@ public class TransactionalSentMailService implements SentMailService {
     private final SentEmailFactory sentEmailFactory;
 
     @Override
-    public void store(String email, String htmlContent, String title, Instant sentInstant) {
+    public void store(String email, String htmlContent, String title, LocalDateTime sentInstant) {
         sentEmailRepository.save(sentEmailFactory.create(email, htmlContent, title, sentInstant));
     }
 }

@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -28,7 +29,7 @@ public class SimpleQueryFacadeTest {
     @Test
     public void should_return_what_repo_returns() {
         //given:
-        SentEmail sentEmail = new SentEmail("123", "john@doe.com", Instant.now(), "<p>hello</p>", "Hello!");
+        SentEmail sentEmail = new SentEmail("123", "john@doe.com", LocalDateTime.now(), "<p>hello</p>", "Hello!");
         Mockito.when(sentEmailRepository.findById("123")).thenReturn(Optional.of(sentEmail));
         //when:
         Optional<SentMailDTO> mail = simpleQueryFacade.getById("123");

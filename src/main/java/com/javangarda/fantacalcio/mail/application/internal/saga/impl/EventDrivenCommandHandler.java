@@ -8,6 +8,7 @@ import com.javangarda.fantacalcio.mail.application.internal.saga.MailEventPublis
 import lombok.AllArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 public class EventDrivenCommandHandler implements CommandHandler {
@@ -18,6 +19,6 @@ public class EventDrivenCommandHandler implements CommandHandler {
     @Override
     public void handle(SendMailCommand command) {
         emailSender.send(command);
-        mailEventPublisher.publishMailSentEvent(MailSentEvent.of(command.getRecipient(), command.getContent(), command.getTitle(), Instant.now()));
+        mailEventPublisher.publishMailSentEvent(MailSentEvent.of(command.getRecipient(), command.getContent(), command.getTitle(), LocalDateTime.now()));
     }
 }

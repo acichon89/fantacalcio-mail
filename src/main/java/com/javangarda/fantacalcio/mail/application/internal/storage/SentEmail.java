@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "sent_emails")
@@ -19,7 +20,7 @@ public class SentEmail extends DefaultEntity<String> {
     private String email;
     @Column(name = "sent_date_time")
     @Getter
-    private Instant sentDateTime;
+    private LocalDateTime sentDateTime;
     @Getter
     @Column(name = "html_content")
     private String htmlContent;
@@ -28,10 +29,10 @@ public class SentEmail extends DefaultEntity<String> {
 
     public SentEmail() {}
 
-    public SentEmail(String id, String email, Instant sentInstant, String htmlContent, String title) {
+    public SentEmail(String id, String email, LocalDateTime sentDateTime, String htmlContent, String title) {
         super(id);
         this.email=email;
-        this.sentDateTime=sentInstant;
+        this.sentDateTime=sentDateTime;
         this.htmlContent=htmlContent;
         this.title=title;
     }

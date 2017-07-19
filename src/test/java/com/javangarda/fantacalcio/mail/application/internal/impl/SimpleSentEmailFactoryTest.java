@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +22,7 @@ public class SimpleSentEmailFactoryTest {
     public void should_create_entity(){
         //given:
         //when:
-        SentEmail sentEmail = simpleSentEmailFactory.create("john@doe.com","<html></html>","title", Instant.now());
+        SentEmail sentEmail = simpleSentEmailFactory.create("john@doe.com","<html></html>","title", LocalDateTime.now());
         //then:
         assertEquals(sentEmail.getEmail(), "john@doe.com");
         assertEquals(sentEmail.getTitle(), "title");
