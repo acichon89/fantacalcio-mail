@@ -1,5 +1,4 @@
-package com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging;
-
+package com.javangarda.fantacalcio.mail.infrastructure.adapter.income.messaging.model;
 
 import lombok.Value;
 
@@ -14,4 +13,3 @@ public class UserAttemptedToChangeEmailEvent {
     private String confirmationToken;
     private Locale emailLocale;
 }
-

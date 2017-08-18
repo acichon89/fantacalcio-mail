@@ -1,4 +1,4 @@
-package com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging;
+package com.javangarda.fantacalcio.mail.infrastructure.adapter.income.messaging;
 
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.messaging.SubscribableChannel;

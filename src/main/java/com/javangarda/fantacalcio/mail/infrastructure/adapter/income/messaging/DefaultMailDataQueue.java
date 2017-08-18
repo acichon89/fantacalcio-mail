@@ -1,4 +1,4 @@
-package com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging;
+package com.javangarda.fantacalcio.mail.infrastructure.adapter.income.messaging;
 
 
 import com.javangarda.fantacalcio.mail.application.gateway.commands.SendMailCommand;

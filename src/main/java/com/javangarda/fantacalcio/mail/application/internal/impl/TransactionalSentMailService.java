@@ -4,6 +4,7 @@ import com.javangarda.fantacalcio.mail.application.internal.SentEmailFactory;
 import com.javangarda.fantacalcio.mail.application.internal.SentMailService;
 import com.javangarda.fantacalcio.mail.application.internal.storage.SentEmailRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;

@@ -1,6 +1,5 @@
 package com.javangarda.fantacalcio.mail.application.gateway.commands;
 
-import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.util.Locale;

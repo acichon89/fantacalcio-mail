@@ -1,0 +1,17 @@
+spring:
+  mail:
+    host: smtp.mail.yahoo.com
+    port: 587
+    smtp:
+      auth: true
+    properties:
+      mail.smtp.starttls.enable: true
+  datasource:
+    url: jdbc:sqlite:fantacalcio_mail_db.sqlite
+    driverClassName: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.dialect.SQLiteDialect
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

@@ -1,0 +1,20 @@
+server:
+  port: 8060
+spring:
+  mail:
+    host: smtp.mail.yahoo.com
+    port: 587
+    smtp:
+      auth: true
+    properties:
+      mail.smtp.starttls.enable: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  datasource:
+    url: jdbc:mysql://localhost/fantacalcio_mail?useLegacyDatetimeCode=false&serverTimezone=Etc/UTC
+    username: fantacalcio_db_user
+    password: fantacalciodbpass1
+    driverClassName: com.mysql.jdbc.Driver

@@ -17,10 +17,10 @@ import com.javangarda.fantacalcio.mail.application.internal.saga.MailEventPublis
 import com.javangarda.fantacalcio.mail.application.internal.saga.impl.DefaultEventHandler;
 import com.javangarda.fantacalcio.mail.application.internal.saga.impl.EventDrivenCommandHandler;
 import com.javangarda.fantacalcio.mail.application.internal.storage.SentEmailRepository;
-import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.DefaultMailDataQueue;
-import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.mail.DefaultEmailSender;
-import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.Events;
-import com.javangarda.fantacalcio.mail.infrastructure.port.adapter.messaging.MessageHandler;
+import com.javangarda.fantacalcio.mail.infrastructure.adapter.income.messaging.DefaultMailDataQueue;
+import com.javangarda.fantacalcio.mail.infrastructure.adapter.income.messaging.Events;
+import com.javangarda.fantacalcio.mail.infrastructure.adapter.income.messaging.UserExternalEventHandler;
+import com.javangarda.fantacalcio.mail.infrastructure.adapter.outcome.mail.DefaultEmailSender;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +39,7 @@ import org.springframework.integration.endpoint.PollingConsumer;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -50,6 +51,7 @@ import java.util.concurrent.Executor;
 @EnableBinding(Events.class)
 @EnableIntegration
 @IntegrationComponentScan(basePackages={"com.javangarda.fantacalcio.mail.application.internal.saga"})
+@EnableScheduling
 public class FantacalcioMailApplication implements AsyncConfigurer {
 
 	public static void main(String[] args) {
@@ -119,8 +121,8 @@ public class FantacalcioMailApplication implements AsyncConfigurer {
 	}
 
 	@Bean
-	public MessageHandler messageHandler(CommandBus commandBus) {
-		return new MessageHandler(commandBus);
+	public UserExternalEventHandler userExternalEventHandler(CommandBus commandBus) {
+		return new UserExternalEventHandler(commandBus);
 	}
 
 	@Bean
